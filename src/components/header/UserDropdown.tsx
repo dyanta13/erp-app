@@ -3,39 +3,23 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
-import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/context/authContext";
 
 export default function UserDropdown() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useAuth();
+  //const { user } = useAuth();
 
 function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
   e.stopPropagation();
   setIsOpen((prev) => !prev);
 }
 
-const handleLogout = async (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
+  const { user, loading, logout } = useAuth();
 
-    try {
-      // Panggil API Route untuk hapus Cookie / Session di server
-      await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-
-    // (Opsional) Jika pakai localStorage / sessionStorage, bersihkan juga
-    localStorage.clear();
-
-    // berpindah ke halaman login & refresh router state
-    router.replace("/login"); // atau "/" jika login kamu di root
-    router.refresh();
-    } catch (error) {
-      console.error("Gagal logout:", error);
-    }
-  };
+  if (loading) return <p>Memuat...</p>;
+  if (!user) return <p>Belum login.</p>;
 
   function closeDropdown() {
     setIsOpen(false);
@@ -55,7 +39,7 @@ const handleLogout = async (e: React.MouseEvent<HTMLElement>) => {
           />
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">Musharof</span>
+        <span className="block mr-1 font-medium text-theme-sm">{user.name}</span>
 
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
@@ -84,10 +68,10 @@ const handleLogout = async (e: React.MouseEvent<HTMLElement>) => {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            Musharof Chowdhury
+            {user.name}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            randomuser@pimjo.com
+            {user.email}
           </span>
         </div>
 
@@ -171,7 +155,7 @@ const handleLogout = async (e: React.MouseEvent<HTMLElement>) => {
 
         <Link
           href="/login"
-          onClick={handleLogout}
+          onClick={logout}
           className="flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
         >
           <svg

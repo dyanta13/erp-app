@@ -1,13 +1,18 @@
 "use client";
 
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/context/authContext";
+
 
 export const WelcomePage = () => {
-  const { user, loading } = useAuth();
+  //const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
+  
+    if (loading) return <p className="p-6 animate-pulse">Memuat data user...</p>;
+    if (!user) return <p className="p-6 animate-pulse">Belum login.</p>;
 
-  if (loading) {
-    return <p className="p-6 animate-pulse">Memuat data user...</p>;
-  }
+  //if (loading) {
+    //return <p className="p-6 animate-pulse">Memuat data user...</p>;
+  //}
 
   return (
     <div className="space-y-4">

@@ -106,7 +106,7 @@ export const UserPage = () => {
   };
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3">
 
       <div className="flex flex-col sm:flex-row gap-3 p-2">
           {/* Input Pencarian Nama */}
@@ -172,7 +172,7 @@ export const UserPage = () => {
         <div className="min-w-[750px]">
           <Table>
             {/* Table Header */}
-            <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
+            <TableHeader className="border-b border-gray-100 dark:border-white/5">
               <TableRow>
                 <TableCell
                   isHeader

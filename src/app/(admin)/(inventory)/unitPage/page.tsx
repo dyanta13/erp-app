@@ -2,7 +2,6 @@ import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import UnitPage from "@/components/inventory/MasterUnit/UnitPage";
 export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
-import React from "react";
 
 export default function unitPage() {
   return (

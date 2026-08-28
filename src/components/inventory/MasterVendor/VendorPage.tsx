@@ -8,21 +8,23 @@ import api from "@/components/lib/axios";
 import Axios from "axios";
 import toast from "react-hot-toast";
 import Pagination from "@/components/tables/Pagination";
+import { EnvelopeIcon } from "@/icons";
 import { Modal } from "@/components/ui/modal";
 import { useModal } from "@/hooks/useModal";
 
-interface Segment {
+interface Vendor {
   id: number;
   code: string;
   name: string;
-  description: string;
-  status: "active" | "nonactive";
+  phone: string; 
+  address: string;
+  email: string;
 }
 
-export default function SegmentPage() {
-  const [segments, setSegments] = useState<Segment[]>([]);
+export default function VendorPage() {
+  const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const {isOpen, openModal, closeModal } = useModal();
+  const { isOpen, openModal, closeModal } = useModal();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -31,47 +33,51 @@ export default function SegmentPage() {
   const [formData, setFormData] = useState({
     code: "",
     name: "",
-    description: "",
+    phone: "",
+    address: "",
+    email: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const fetchSegments = async (page = 1) => {
+  const fetchVendor = async (page = 1) => {
     setLoading(true);
     try {
-      const response = await api.get("/api/master_segment");
+      const response = await api.get("/api/master_vendor");
       if (response.data.success) {
         const paginatedData = response.data.data;
-        setSegments(response.data.data);
-        setSegments(paginatedData?.data || []);
+        setVendors(response.data.data);
+        setVendors(paginatedData?.data || []);
         setTotalPages(paginatedData?.last_page || 1);
         setCurrentPage(paginatedData?.current_page || 1);
       }
     } catch {
-      toast.error("Gagal mengambil data Master Segment.");
+      toast.error("Gagal mengambil data Master Vendor.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchSegments();
+    fetchVendor();
   }, []);
 
-  const handleOpenModal = (segment?: Segment) => {
+  const handleOpenModal = (vendor?: Vendor) => {
     setErrors({});
-    if (segment) {
-      setEditingId(segment.id);
-      console.log("Data seg:", segment);
+    if (vendor) {
+      setEditingId(vendor.id);
       setFormData({
-        code: segment.code,
-        name: segment.name,
-        description: segment.description || "",
+        code: vendor.code,
+        name: vendor.name,
+        phone: vendor.phone || "",
+        address: vendor.phone || "",
+        email: vendor.phone || "",
       });
     } else {
       setEditingId(null);
-      setFormData({ code: "", name: "", description: "" });
+      setFormData({ code: "", name: "", phone: "", address: "", email: "" });
     }
     openModal();
+    //setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
@@ -93,19 +99,20 @@ export default function SegmentPage() {
       await api.get("/sanctum/csrf-cookie");
 
       if (editingId) {
-        const res = await api.put(`/api/master_segment/${editingId}`, formData);
+        const res = await api.put(`/api/master_vendor/${editingId}`, formData);
         if (res.data.success) {
-          toast.success("Master Segment berhasil diperbarui!");
+          toast.success("Master Vendor berhasil diperbarui!");
         }
       } else {
-        const res = await api.post("/api/master_segment", formData);
+        const res = await api.post("/api/master_vendor", formData);
         if (res.data.success) {
-          toast.success("Master Segment berhasil ditambahkan!");
+          toast.success("Master Vendor berhasil ditambahkan!");
         }
       }
 
-      handleCloseModal();
-      fetchSegments();
+      closeModal();
+      fetchVendor();
+
     } catch (err: unknown) {
       if (Axios.isAxiosError(err) && err.response?.status === 422) {
         const backendErrors = err.response.data.errors || {};
@@ -124,22 +131,22 @@ export default function SegmentPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus segment ini?")) return;
+    if (!confirm("Apakah Anda yakin ingin menghapus vendor ini?")) return;
 
     try {
-      const res = await api.delete(`/api/master_segment/${id}`);
+      const res = await api.delete(`/api/master_vendor/${id}`);
       if (res.data.success) {
-        toast.success("Master Segment berhasil dihapus!");
-        fetchSegments();
+        toast.success("Master Vendor berhasil dihapus!");
+        fetchVendor();
       }
     } catch (err) {
-      toast.error("Gagal menghapus data segment.");
+      toast.error("Gagal menghapus data vendor.");
     }
   };
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
-        fetchSegments(page);
+        fetchVendor(page);
       //setCurrentPage(page);
     }
   };
@@ -151,14 +158,14 @@ export default function SegmentPage() {
           onClick={() => handleOpenModal()}
           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition"
         >
-          + Tambah Segment
+          + Tambah Vendor
         </button>
       </div>
 
-      <ComponentCard title="Daftar Segment">
+      <ComponentCard title="Daftar Vendor">
         {loading ? (
           <div className="p-6 text-center text-gray-500 animate-pulse">
-            Memuat data segment...
+            Memuat data vendor...
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -167,36 +174,37 @@ export default function SegmentPage() {
                 <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase">
                   <th className="py-3 px-4">No</th>
                   <th className="py-3 px-4">Kode</th>
-                  <th className="py-3 px-4">Nama Segment</th>
-                  <th className="py-3 px-4">Deskripsi</th>
+                  <th className="py-3 px-4">Nama vendor</th>
+                  <th className="py-3 px-4">No. Telp</th>
+                  <th className="py-3 px-4">Alamat</th>
                   <th className="py-3 px-4 text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-                {segments.length === 0 ? (
+                {vendors.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-6 text-center text-gray-500">
-                      Belum ada data Master Segment.
+                      Belum ada data Master Vendor.
                     </td>
                   </tr>
                 ) : (
-                  segments.map((seg, index) => (
-                    <tr key={seg.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                  vendors.map((ven, index) => (
+                    <tr key={ven.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
                       <td className="py-3 px-4 font-medium">{(currentPage - 1) * 10 + index + 1}</td>
                       <td className="py-3 px-4 font-bold text-blue-600 dark:text-blue-400">
-                        {seg.code}
+                        {ven.code}
                       </td>
-                      <td className="py-3 px-4 font-semibold">{seg.name}</td>
-                      <td className="py-3 px-4 text-gray-500 dark:text-gray-400">{seg.description || "-"}</td>
+                      <td className="py-3 px-4 font-semibold">{ven.name}</td>
+                      <td className="py-3 px-4 text-gray-500 dark:text-gray-400">{ven.phone || "-"}</td>
                       <td className="py-3 px-4 text-center space-x-2">
                         <button
-                          onClick={() => handleOpenModal(seg)}
+                          onClick={() => handleOpenModal(ven)}
                           className="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium rounded transition"
                         >
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(seg.id)}
+                          onClick={() => handleDelete(ven.id)}
                           className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded transition"
                         >
                           Hapus
@@ -212,21 +220,21 @@ export default function SegmentPage() {
       </ComponentCard>
 
       {/* --- MODAL FORM --- */}
-      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[450px] m-4">
+       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[600px] m-4">
           <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 mb-2 dark:bg-gray-900 lg:p-11">
-            <div className="flex justify-between items-center p-2 pb-3">
+            <div className="flex justify-between items-center pb-3">
               <h3 className="text-lg font-bold text-gray-800 dark:text-white">
-                {editingId ? "Edit Master Segment" : "Tambah Master Segment"}
+                {editingId ? "Edit Master Vendor" : "Tambah Master Vendor"}
               </h3>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label>Kode Segment (Max 10 Char)</Label>
+                <Label>Kode Vendor</Label>
                 <Input
                   type="text"
                   name="code"
-                  placeholder="Contoh: ACC, PRT, DRK"
+                  placeholder="Contoh: 001, 101, 1001"
                   value={formData.code}
                   onChange={handleChange}
                   error={!!errors.code}
@@ -236,11 +244,11 @@ export default function SegmentPage() {
               </div>
 
               <div>
-                <Label>Nama Segment</Label>
+                <Label>Nama Vendor</Label>
                 <Input
                   type="text"
                   name="name"
-                  placeholder="Contoh: Accessories, Peralatan"
+                  placeholder=""
                   value={formData.name}
                   onChange={handleChange}
                   error={!!errors.name}
@@ -250,15 +258,49 @@ export default function SegmentPage() {
               </div>
 
               <div>
-                <Label>Deskripsi (Opsional)</Label>
+                <Label>Phone</Label>
+                <Input
+                  type="number"
+                  name="phone"
+                  placeholder="Nomor Hp/Telp Vendor"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  error={!!errors.phone}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label>Alamat</Label>
                 <Input
                   type="text"
-                  name="description"
-                  placeholder="Keterangan singkat"
-                  value={formData.description}
+                  name="address"
+                  placeholder="Jl..."
+                  value={formData.address}
                   onChange={handleChange}
-                  error={!!errors.description}
+                  error={!!errors.address}
+                  required
                 />
+                {errors.address && <p className="mt-1 text-xs text-red-500">{errors.address}</p>}
+              </div>
+
+              <div>
+                  <Label>Email</Label>
+                    <div className="relative">
+                        <Input
+                        name="email"
+                        placeholder="info@gmail.com"
+                        type="text"
+                        value={formData.email}
+                        onChange={handleChange}
+                        error={!!errors.email}
+                        className="pl-[62px]"
+                        />
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 border-r border-gray-200 px-3.5 py-3 text-gray-500 dark:border-gray-800 dark:text-gray-400">
+                            <EnvelopeIcon />
+                        </span>
+                    {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+                   </div>
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t dark:border-gray-800">

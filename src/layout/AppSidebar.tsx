@@ -42,10 +42,10 @@ const navItems: NavItem[] = [
       { name: "Purchasing", path: "/blank", pro: false },
       { name: "Retur", path: "/error-404", pro: false },
       { name: "Adjustment", path: "/error-404", pro: false },
-      { name: "Master Category", path: "/addCategory", pro: false },
+      { name: "Master Category", path: "/categoryPage", pro: false },
       { name: "Master Segment", path: "/segmentPage", pro: false },
-      { name: "Master Item", path: "/error-404", pro: false },
-      { name: "Master Vendor", path: "/error-404", pro: false },
+      { name: "Master Item", path: "/itemPage", pro: false },
+      { name: "Master Vendor", path: "/vendorPage", pro: false },
       { name: "Master Unit", path: "/unitPage", pro: false },
       { name: "Master Location", path: "/error-404", pro: false },
     ],
@@ -281,20 +281,26 @@ const AppSidebar: React.FC = () => {
         <Link href="/">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
+            <div className="flex">
               <Image
                 className="dark:hidden"
                 src="/images/logo/logo.svg"
                 alt="Logo"
-                width={150}
-                height={40}
+                width={50}
+                height={32}
               />
+              <p className="mt-3">Erp System</p>
+            </div>
+            <div className="flex">
               <Image
                 className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
+                src="/images/logo/logo.svg"
                 alt="Logo"
-                width={150}
-                height={40}
+                width={50}
+                height={32}
               />
+              <p className="mt-3 text-white">Erp System</p>
+            </div>
             </>
           ) : (
             <Image

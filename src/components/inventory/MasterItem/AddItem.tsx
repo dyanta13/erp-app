@@ -24,6 +24,7 @@ export default function AddItem() {
     category_id: "",
     segment_id: "",
     barcode: "",
+    hpp: "",
     vendor_id: "",
     status: "active",
   });
@@ -45,9 +46,9 @@ export default function AddItem() {
     const fetchMasterData = async () => {
       try {
         const [catRes, segRes, venRes] = await Promise.all([
-          api.get("/api/categories"),
-          api.get("/api/segments"),
-          api.get("/api/vendors"),
+          api.get("/api/master_category"),
+          api.get("/api/master_segment"),
+          api.get("/api/master_vendor"),
         ]);
 
         if (catRes.data.success) {
@@ -94,7 +95,7 @@ export default function AddItem() {
 
     try {
       await api.get("/sanctum/csrf-cookie");
-      const response = await api.post("/api/items", formData);
+      const response = await api.post("/api/master_item", formData);
 
       if (response.data.success) {
         toast.success(`Item berhasil disimpan dengan SKU: ${response.data.data.sku}`);
@@ -188,6 +189,20 @@ export default function AddItem() {
               error={!!errors.barcode}
             />
             {errors.barcode && <p className="mt-1 text-xs text-red-500">{errors.barcode}</p>}
+          </div>
+
+          {/* HPP */}
+          <div>
+            <Label>HPP</Label>
+            <Input
+              type="number"
+              name="hpp"
+              placeholder="Masukkan Hpp"
+              value={formData.hpp}
+              onChange={handleChange}
+              error={!!errors.hpp}
+            />
+            {errors.hpp && <p className="mt-1 text-xs text-red-500">{errors.hpp}</p>}
           </div>
 
           {/* Vendor Dropdown */}

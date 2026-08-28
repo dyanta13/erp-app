@@ -1,5 +1,6 @@
 "use client";
 
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import Footer from "@/components/footer/Footer";
 import { useSidebar } from "@/context/SidebarContext";
 import AppHeader from "@/layout/AppHeader";
@@ -23,21 +24,22 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen xl:flex">
-      {/* Sidebar dan Backdrop */}
-      <AppSidebar />
-      <Backdrop />
-      
-      {/* Main Content Area */}
-      <div className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}>
-        {/* Header */}
-        <AppHeader />
+      <ProtectedRoute>
+        {/* Sidebar dan Backdrop */}
+        <AppSidebar />
+        <Backdrop />
         
-        {/* Page Content & Footer */}
-        <div className="p-4 mx-auto max-w-screen-2xl md:p-6 flex flex-col min-h-[calc(100vh-80px)] justify-between">
-          <main className="flex-1">{children}</main>
-          <Footer />
+        {/* Main Content Area */}
+        <div className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}>
+          {/* Header */}
+          <AppHeader />
+          {/* Page Content & Footer */}
+          <div className="p-4 mx-auto max-w-screen-2xl md:p-6 flex flex-col min-h-[calc(100vh-80px)] justify-between">
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
         </div>
-      </div>
+      </ProtectedRoute>
     </div>
   );
 }

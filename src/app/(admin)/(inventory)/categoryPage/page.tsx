@@ -1,15 +1,15 @@
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import SegmentPage from "@/components/inventory/MasterSegment/SegmentPage";
+import CategoryPage from "@/components/inventory/MasterCategory/CategoryPage";
 export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
 
-export default function segmentPage() {
+export default function categoryPage() {
   return (
     <div>
      <PageBreadcrumb pageTitle="Master Segment" />
       <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
         <div className="space-y-6">
-            <SegmentPage/>
+            <CategoryPage/>
         </div>
       </div>
     </div>

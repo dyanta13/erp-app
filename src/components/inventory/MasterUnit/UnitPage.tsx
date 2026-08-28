@@ -8,6 +8,8 @@ import api from "@/components/lib/axios";
 import Axios from "axios";
 import toast from "react-hot-toast";
 import Pagination from "@/components/tables/Pagination";
+import { Modal } from "@/components/ui/modal";
+import { useModal } from "@/hooks/useModal";
 
 interface Unit {
   id: number;
@@ -18,7 +20,7 @@ interface Unit {
 export default function UnitPage() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const { isOpen, openModal, closeModal } = useModal();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
@@ -75,11 +77,12 @@ export default function UnitPage() {
       setEditingId(null);
       setFormData({ code: "", description: "" });
     }
-    setIsModalOpen(true);
+    openModal();
+    //setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
+    closeModal();
     setEditingId(null);
   };
 
@@ -221,19 +224,12 @@ export default function UnitPage() {
       </ComponentCard>
 
       {/* --- MODAL FORM TAMBAH / EDIT --- */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg max-w-md w-full p-6 space-y-4 border border-gray-200 dark:border-gray-800">
-            <div className="flex justify-between items-center border-b pb-3 dark:border-gray-800">
+       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[450px] m-4">
+        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 mb-2 dark:bg-gray-900 lg:p-11">
+            <div className="flex justify-between items-center p-2 pb-3">
               <h3 className="text-lg font-bold text-gray-800 dark:text-white">
-                {editingId ? "Edit Master Unit" : "Tambah Master Unit"}
+                {editingId ?"Edit Master Unit" :"Tambah Master Unit"}
               </h3>
-              <button
-                onClick={handleCloseModal}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-white text-xl"
-              >
-                &times;
-              </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -284,8 +280,7 @@ export default function UnitPage() {
               </div>
             </form>
           </div>
-        </div>
-      )}
+      </Modal>
       {/* Render Komponen Pagination */}
       {!loading && totalPages > 1 && (
         <div className="flex justify-end p-4">
